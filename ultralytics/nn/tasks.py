@@ -45,6 +45,7 @@ from ultralytics.nn.modules import (
     Detect,
     DWConv,
     DWConvTranspose2d,
+    CBAM,
     Focus,
     GhostBottleneck,
     GhostConv,
@@ -958,6 +959,7 @@ def parse_model(d, ch, verbose=True):  # model_dict, input_channels(3)
         {
             Classify,
             Conv,
+            CBAM,
             ConvTranspose,
             GhostConv,
             Bottleneck,
@@ -1017,6 +1019,7 @@ def parse_model(d, ch, verbose=True):  # model_dict, input_channels(3)
             if "torchvision.ops." in m
             else globals()[m]
         )  # get module
+
         for j, a in enumerate(args):
             if isinstance(a, str):
                 with contextlib.suppress(ValueError):
@@ -1031,6 +1034,15 @@ def parse_model(d, ch, verbose=True):  # model_dict, input_channels(3)
                 args[2] = int(max(round(min(args[2], max_channels // 2 // 32)) * width, 1) if args[2] > 1 else args[2])
 
             args = [c1, c2, *args[1:]]
+            #add module
+            # print("args",args)
+            # print("args[1:]",*args[1:])
+            # print("c1",c1)
+            # print("c2",c2)
+            if m is CBAM:
+                args = [c1, *args[2:]]
+                pass
+
             if m in repeat_modules:
                 args.insert(2, n)  # number of repeats
                 n = 1
