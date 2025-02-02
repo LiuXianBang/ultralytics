@@ -11,6 +11,7 @@ import thop
 import torch
 import torch.nn as nn
 
+from ultralytics.adding import (SimAM)
 from ultralytics.nn.modules import (
     AIFI,
     C1,
@@ -1011,6 +1012,11 @@ def parse_model(d, ch, verbose=True):  # model_dict, input_channels(3)
             C2PSA,
         }
     )
+
+    adding_modules = frozenset(
+        {SimAM}
+    )
+
     for i, (f, n, m, args) in enumerate(d["backbone"] + d["head"]):  # from, number, module, args
         m = (
             getattr(torch.nn, m[3:])
@@ -1025,7 +1031,7 @@ def parse_model(d, ch, verbose=True):  # model_dict, input_channels(3)
                 with contextlib.suppress(ValueError):
                     args[j] = locals()[a] if a in locals() else ast.literal_eval(a)
         n = n_ = max(round(n * depth), 1) if n > 1 else n  # depth gain
-        if m in base_modules:
+        if m in base_modules or m in adding_modules:
             c1, c2 = ch[f], args[0]
             if c2 != nc:  # if c2 not equal to number of classes (i.e. for Classify() output)
                 c2 = make_divisible(min(c2, max_channels) * width, 8)
@@ -1034,14 +1040,11 @@ def parse_model(d, ch, verbose=True):  # model_dict, input_channels(3)
                 args[2] = int(max(round(min(args[2], max_channels // 2 // 32)) * width, 1) if args[2] > 1 else args[2])
 
             args = [c1, c2, *args[1:]]
-            #add module
-            # print("args",args)
-            # print("args[1:]",*args[1:])
-            # print("c1",c1)
-            # print("c2",c2)
             if m is CBAM:
                 args = [c1, *args[2:]]
                 pass
+            if m is SimAM:
+                args = []
 
             if m in repeat_modules:
                 args.insert(2, n)  # number of repeats

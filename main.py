@@ -5,7 +5,7 @@ from ultralytics.nn import DetectionModel
 # model = YOLO("ultralytics/cfg/models/11/yolov11n-my.yaml")
 
 # print(model.info(detailed=True))
-DetectionModel("ultralytics/cfg/models/11/yolov11n-my.yaml")
+DetectionModel("ultralytics/cfg/models/11/yolo11n-my.yaml")
 
 # # Train the model
 # train_results = model.train(
