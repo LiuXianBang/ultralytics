@@ -11,7 +11,7 @@ import thop
 import torch
 import torch.nn as nn
 
-from ultralytics.adding import (SimAM)
+from ultralytics.adding import (SimAM, ECA)
 from ultralytics.nn.modules import (
     AIFI,
     C1,
@@ -1014,7 +1014,7 @@ def parse_model(d, ch, verbose=True):  # model_dict, input_channels(3)
     )
 
     adding_modules = frozenset(
-        {SimAM}
+        {SimAM,ECA}
     )
 
     for i, (f, n, m, args) in enumerate(d["backbone"] + d["head"]):  # from, number, module, args
@@ -1045,6 +1045,8 @@ def parse_model(d, ch, verbose=True):  # model_dict, input_channels(3)
                 pass
             if m is SimAM:
                 args = []
+            if m is ECA:
+                args = [*args[2:]]
 
             if m in repeat_modules:
                 args.insert(2, n)  # number of repeats

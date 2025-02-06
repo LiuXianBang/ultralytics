@@ -2,10 +2,10 @@ from ultralytics import YOLO
 from ultralytics.nn import DetectionModel
 
 # Load a model
-# model = YOLO("ultralytics/cfg/models/11/yolo11n-my.yaml")
-
+model = YOLO("ultralytics/cfg/models/11/yolo11n-MAFPN.yaml")
+print(model.model.named_modules())
 # print(model.info(detailed=True))
-DetectionModel("ultralytics/cfg/models/11/yolo11n-SimAM.yaml")
+# DetectionModel("ultralytics/cfg/models/11/yolo11n-MAFPN.yaml")
 
 # # Train the model
 # train_results = model.train(
